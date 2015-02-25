@@ -1,0 +1,31 @@
+
+# Mac crap
+.DS_Store
+
+# Unity specific
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+*.csproj
+*.pidb
+*.unityproj
+*.sln
+*.userprefs
+
+# Custom for sk
+chatPrototype.userprefs
+
+# Unity android
+*.class
+*.apk
+*.ap_
+
+ApsalarBuildLogFile.txt
+
+# Python
+*.py[co]
+*.py[co].meta
+
+# Vim
+*.swp
+
