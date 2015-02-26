@@ -22,11 +22,11 @@ using UnityEditor;
 [InitializeOnLoad]
 #endif
 
-public class NPNFSettings : ScriptableObject, INPNFSettings
+public class NPNFSettings : ScriptableObject, INPNFSettings, IAdminSettings
 {
     private static NPNFSettings instance;
 
-    public const string SDK_VERSION = "1.5.5";
+    public const string SDK_VERSION = "1.5.6";
     private const string OS_MACOSX = "Mac OS X";
     private const string USER_ID = "npnfsettings_manager";
     private const string npnfSettingsAssetName = "NPNFSettings";
@@ -82,24 +82,26 @@ public class NPNFSettings : ScriptableObject, INPNFSettings
 		}
 	}
 
-    private void CreateAdminManager(string adminId, string adminSecret, INPNFSettings setting)
+    private void CreateAdminManager()
     {
-        mAdmin = AdminManager.Create(adminId, adminSecret, setting, USER_ID, mQueue);
+        mAdmin = AdminManager.Create(this, this, USER_ID, mQueue);
     }
 
-    public void GetVersions(string adminId, string adminSecret, INPNFSettings setting, Action<string[], NPNFError> callback)
+    public void GetVersions(Action<List<NPNF.Core.Configuration.Version>, NPNFError> callback)
     {
-        CreateAdminManager(adminId, adminSecret, setting);
-        mAdmin.GetVersions((string[] versions, NPNFError error) => {
+        CreateAdminManager();
+        mAdmin.GetAllVersions((List<NPNF.Core.Configuration.Version> versions, NPNFError error) => {
             callback(versions, error);
         });
     }
 
-    public void VerifyAppSettings(INPNFSettings setting, Action<AdminManager.SettingsType, bool, string> callback)
+    // Callback will be called once for each type of validation (app, admin, version)
+    public void VerifyAppSettings(Action<AdminManager.SettingsType, bool> callback)
     {
-        AdminManager.VerifyAppSettings(mQueue, adminId, adminSecret, setting, (AdminManager.SettingsType type, bool isValid, string message) =>
+        CreateAdminManager();
+        mAdmin.VerifyAppSettings((AdminManager.SettingsType type, bool isValid) =>
         {
-            callback(type, isValid, message);
+            callback(type, isValid);
         });
     }
 

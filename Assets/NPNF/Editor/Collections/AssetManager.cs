@@ -29,7 +29,7 @@ public class AssetManager : ScriptableObject, ITableDataSource
     private void OnEnable()
 	{
         mQueue = new CoroutineQueue();
-        mAdmin = AdminManager.Create(NPNFSettings.Instance.AdminId, NPNFSettings.Instance.AdminSecret, NPNFSettings.Instance, USER_ID, mQueue);
+        mAdmin = AdminManager.Create(NPNFSettings.Instance, NPNFSettings.Instance, USER_ID, mQueue);
         ResetData();
 	}
 
@@ -49,9 +49,9 @@ public class AssetManager : ScriptableObject, ITableDataSource
         CurrentAssetType = null;
     }
 
-    public void GetVersions(Action<string[], NPNFError> callback)
+    public void GetVersions(Action<List<NPNF.Core.Configuration.Version>, NPNFError> callback)
     {
-        mAdmin.GetVersions((string[] versions, NPNFError error)=>{
+        mAdmin.GetAllVersions((List<NPNF.Core.Configuration.Version> versions, NPNFError error)=>{
             callback(versions, error);
         });
     }

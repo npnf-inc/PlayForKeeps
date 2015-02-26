@@ -25,204 +25,172 @@ public class NPNFSettingsEditor : Editor
     private bool isAdminSettingsValid = true;
     private bool isVersionSettingsValid = true;
 
-    private bool isClientVersionExist = false;
+    // use boolean to avoid repainting gui issues
+    private bool haveVersions = false;
 
     public override void OnInspectorGUI()
 	{
         instance = (NPNFSettings)target;
 
-        EditorGUILayout.Space();
 		AppKeyGUI();
 		EditorGUILayout.Space();
         AdminKeyGUI();
-//        EditorGUILayout.Space();
-//        PushNotificationsGUI ();
 		EditorGUILayout.Space();
-		AboutGUI();
+        VersionsGUI();
         EditorGUILayout.Space();
         VerifySettingsGUI();
+
         // SSDK-1154 - force OnInspectorGUI to be called on every frame
         EditorUtility.SetDirty(target);
         instance.Update();
-	}
 
-	private void AppKeyGUI()
+        if (Event.current.type == EventType.Repaint)
+            haveVersions = instance.ClientVersions != null && instance.ClientVersions.Length > 0;
+    }
+
+    private void AppKeyGUI()
 	{
-		EditorGUILayout.HelpBox("Add the NPNF Platform keys associated with this game", MessageType.None);
+		EditorGUILayout.HelpBox("Add the App keys associated with this game", MessageType.None);
         string newAppId = EditableField(appIdLabel, instance.AppId, 180, isAppSettingsValid);
         string newAppSecret = EditableField(appSecretLabel, instance.AppSecret, 180, isAppSettingsValid);
         if (newAppId != instance.AppId || newAppSecret != instance.AppSecret)
         {
-            instance.ClientVersions = new string[] {};
-            instance.AppVersion = null;
+            ClearVersions();
             instance.AppId = newAppId;
             instance.AppSecret = newAppSecret;
             ManifestMod.GenerateManifest();
         }
-
-        if (Event.current.type == EventType.Layout)
-        {
-            if(instance.ClientVersions != null && instance.ClientVersions.Length > 0)
-            {
-                isClientVersionExist = true;
-            }
-            else
-            {
-                isClientVersionExist = false;
-            }
-        }
-
-        if(isClientVersionExist)
-        {
-            GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(appVersionLabel, GUILayout.Width(180), GUILayout.Height (16));
-			GUI.color = Color.white;
-            instance.SelectedVersionIndex = EditorGUILayout.Popup(instance.SelectedVersionIndex, instance.ClientVersions);
-            if (instance.ClientVersions.Length > instance.SelectedVersionIndex &&
-                instance.AppVersion != instance.ClientVersions[instance.SelectedVersionIndex])
-            {
-                instance.AppVersion = instance.ClientVersions[instance.SelectedVersionIndex];
-            }
-
-            GUI.enabled = !String.IsNullOrEmpty(instance.AppId) && !String.IsNullOrEmpty(instance.AppSecret);
-            if (GUILayout.Button(reloadVersionsLabel))
-            {
-                RefreshVersions();
-            }
-            GUI.enabled = true;
-            GUILayout.EndHorizontal();
-        }
-        else
-        {
-            GetVersionsButton(appVersionLabel, getVersionsLabel, 180, isVersionSettingsValid);
-        }
 	}
-
-    private void RefreshVersions()
-    {
-        instance.VerifyAppKeys((NPNFError verifyError) => {
-            if (verifyError == null)
-            {
-                CheckSettingStatus(NPNF.Admin.AdminManager.SettingsType.AppSettings, true);
-                instance.GetVersions(instance.AdminId, instance.AdminSecret, NPNFSettings.Instance, (string[] versionsResponse, NPNFError error) => {
-                    if (error != null)
-                    {
-                        if (error.Messages != null && error.Messages.Count > 0)
-                        {
-                            EditorGUILayout.HelpBox(error.Messages[0], MessageType.Error);
-                        }
-                        else
-                        {
-                            EditorGUILayout.HelpBox("Error occurred while reloading data", MessageType.Error);
-                        }
-                    }
-                    else
-                    {
-                        instance.ClientVersions = versionsResponse;
-
-                        // find the index for the current verions after refresh
-                        if (instance.AppVersion != null)
-                        {
-                            for (int i = 0; i < versionsResponse.Length; i++)
-                            {
-                                if (versionsResponse[i].Equals(instance.AppVersion))
-                                {
-                                    instance.SelectedVersionIndex = i;
-                                    break;
-                                }
-                            }
-                        }
-                        else if (versionsResponse.Length > 0)
-                        {
-                            instance.SelectedVersionIndex = 0;
-                            instance.AppVersion = versionsResponse[0];
-                        }
-                    }
-                });
-            }
-            else
-            {
-				String message = verifyError.Messages[0];
-				if (verifyError.Messages[0] == "Keys are invalid")
-				{
-					message = "App ID or App Secret is invalid. Please verify these settings.";
-				}
-				EditorUtility.DisplayDialog("NPNFSettings", message, "OK");
-                instance.ClientVersions = new string[] {};
-            }
-        });
-    }
 
     private void AdminKeyGUI()
     {
-        GUI.color = Color.white;
-        EditorGUILayout.HelpBox("Add the Admin keys associated with this game (for Asset Manager)", MessageType.None);
-        instance.AdminId = EditableField(adminIdLabel, instance.AdminId, 180, isAdminSettingsValid);
-        instance.AdminSecret = EditableField(adminSecretLabel, instance.AdminSecret, 180, isAdminSettingsValid);
+        EditorGUILayout.HelpBox("Add the Admin keys associated with this game", MessageType.None);
+        string newAdminId = EditableField(adminIdLabel, instance.AdminId, 180, isAdminSettingsValid);
+        string newAdminSecret = EditableField(adminSecretLabel, instance.AdminSecret, 180, isAdminSettingsValid);
+        if (newAdminId != instance.AdminId || newAdminSecret != instance.AdminSecret)
+        {
+            ClearVersions();
+            instance.AdminId = newAdminId;
+            instance.AdminSecret = newAdminSecret;
+        }
     }
 
-	private void AboutGUI ()
-	{
-		EditorGUILayout.HelpBox ("About the NPNF Platform SDK", MessageType.None);
-		SelectableLabelField (sdkVersionLabel, NPNFSettings.SDK_VERSION);
+    private void VersionsGUI()
+    {
+        // Handle App Version Selection
+        GUI.enabled = !String.IsNullOrEmpty(instance.AppId) && !String.IsNullOrEmpty(instance.AppSecret) && !String.IsNullOrEmpty(instance.AdminId) && !String.IsNullOrEmpty(instance.AdminSecret);
+        EditorGUILayout.HelpBox("Select an App Version", MessageType.None);
+        if (!isVersionSettingsValid)
+            GUI.color = Color.red;
+        GUILayout.BeginHorizontal();
+        EditorGUILayout.LabelField(appVersionLabel, GUILayout.Width(180), GUILayout.Height (16));
+        GUIContent buttonLabel;
+        if (haveVersions)
+        {
+            instance.SelectedVersionIndex = EditorGUILayout.Popup(instance.SelectedVersionIndex, instance.ClientVersions);
+            if (instance.ClientVersions.Length > instance.SelectedVersionIndex)
+            {
+                instance.AppVersion = instance.ClientVersions[instance.SelectedVersionIndex];
+            }
+            buttonLabel = reloadVersionsLabel;
+        } else
+        {
+            buttonLabel = getVersionsLabel;
+        }
+        if (GUILayout.Button(buttonLabel))
+        {
+            RefreshVersions();
+        }
+        GUILayout.EndHorizontal();
+        GUI.color = Color.white;
+        GUI.enabled = true;
 
-		if (!NPNFSettings.IsValidVersion())
-		{
-			EditorGUILayout.HelpBox("Mismatch SDK Version", MessageType.Error);
-		}
-	}
+        // Display SDK Version
+        SelectableLabelField (sdkVersionLabel, NPNFSettings.SDK_VERSION);
+        if (!NPNFSettings.IsValidVersion())
+        {
+            EditorGUILayout.HelpBox("Mismatch SDK Version", MessageType.Error);
+        }
+    }
+
+    private void ClearVersions()
+    {
+        instance.ClientVersions = new string[] {};
+        instance.AppVersion = null;
+    }
+
+    private void RefreshVersions()
+    {
+        instance.GetVersions((List<NPNF.Core.Configuration.Version> versions, NPNFError error) => {
+            if (error != null)
+            {
+                if (error.Messages != null && error.Messages.Count > 0)
+                {
+                    EditorGUILayout.HelpBox(error.Messages[0], MessageType.Error);
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox("Error occurred while reloading data", MessageType.Error);
+                }
+
+                EditorUtility.DisplayDialog("NPNFSettings", "Unable to retrieve versions.\nPlease check your keys and network connection.", "OK");
+            }
+            else
+            {
+                if (versions.Count > 0)
+                {
+                    instance.ClientVersions = new string[versions.Count];
+                    for (int i = 0; i < versions.Count; ++i)
+                    {
+                        instance.ClientVersions[i] = versions[i].ClientVersion;
+                    }
+                }
+                
+                // find the index for the current versions after refresh
+                if (instance.AppVersion != null)
+                {
+                    for (int i = 0; i < versions.Count; i++)
+                    {
+                        if (versions[i].ClientVersion.Equals(instance.AppVersion))
+                        {
+                            instance.SelectedVersionIndex = i;
+                            break;
+                        }
+                    }
+                }
+                else if (versions.Count > 0)
+                {
+                    instance.SelectedVersionIndex = 0;
+                    instance.AppVersion = versions[0].ClientVersion;
+                }
+                ResetVerifyStatus();
+            }
+        });
+    }
 
     private string EditableField(GUIContent label, string value, int width = 180, bool isValid = true)
 	{
 		string ret = "";
 		EditorGUILayout.BeginHorizontal ();
-        EditorGUILayout.LabelField (label, GUILayout.Width (width), GUILayout.Height (16));
         if (isValid == false)
             GUI.color = Color.red;
+        EditorGUILayout.LabelField (label, GUILayout.Width (width), GUILayout.Height (16));
         ret = EditorGUILayout.TextField(value, GUILayout.Height(16));
         GUI.color = Color.white;
 		EditorGUILayout.EndHorizontal ();
 		return ret;
     }
 
-    private void GetVersionsButton (GUIContent label, GUIContent buttonLabel, int width = 180, bool isValid = true)
-    {
-        EditorGUILayout.BeginHorizontal ();
-        EditorGUILayout.LabelField (label, GUILayout.Width (width), GUILayout.Height (16));
-        GUI.enabled = !String.IsNullOrEmpty(instance.AppId) && !String.IsNullOrEmpty(instance.AppSecret);
-        if (isValid == false)
-            GUI.color = Color.red;
-        if (GUILayout.Button(buttonLabel))
-        {
-            RefreshVersions();
-        }
-        GUI.enabled = true;
-        EditorGUILayout.EndHorizontal ();
-    }
-
     private void VerifySettingsGUI()
     {
         EditorGUILayout.BeginVertical();
-        GUI.enabled = true;
         if (GUILayout.Button("Verify Configuration"))
         {
             ResetVerifyStatus();
-            instance.VerifyAppSettings(NPNFSettings.Instance, (NPNF.Admin.AdminManager.SettingsType type, bool isValid, string message) =>
-            {
-                CheckSettingStatus(type, isValid);
-                verifyStatus += (string.IsNullOrEmpty(verifyStatus) ? "" : "\n") + message;
-            });
+            instance.VerifyAppSettings(CheckSettingStatus);
         }
         EditorGUILayout.LabelField(verifyStatus, GUILayout.Height(48));
-        EditorGUILayout.EndHorizontal();
-    }
-
-    private void ResetVerifyStatus()
-    {
-        verifyStatus = "";
-        isAppSettingsValid = true;
-        isAdminSettingsValid = true;
-        isVersionSettingsValid = true;
+        EditorGUILayout.EndVertical();
     }
 
     /// <summary>
@@ -236,20 +204,31 @@ public class NPNFSettingsEditor : Editor
         {
             case NPNF.Admin.AdminManager.SettingsType.AppSettings:
                 isAppSettingsValid = isValid;
-                // If app settings is not correct, make version settings not correct too
-                if (string.IsNullOrEmpty(instance.AppVersion))
-                    isVersionSettingsValid = false;
+                verifyStatus += isValid ? "App settings are valid" : "App settings are not valid";
                 break;
             case NPNF.Admin.AdminManager.SettingsType.AdminSettings:
                 isAdminSettingsValid = isValid;
+                verifyStatus += isValid ? "Admin settings are valid" : "Admin settings are not valid";
                 break;
             case NPNF.Admin.AdminManager.SettingsType.VersionSettings: 
                 isVersionSettingsValid = isValid;
+                verifyStatus += isValid ? "Version set to " + instance.AppVersion : "App version not set";
                 break;
         }
+        verifyStatus += "\n";
+        if (!isValid)
+            ClearVersions();
     }
 
-	private void SelectableLabelField (GUIContent label, string value)
+    private void ResetVerifyStatus()
+    {
+        verifyStatus = "";
+        isAppSettingsValid = true;
+        isAdminSettingsValid = true;
+        isVersionSettingsValid = true;
+    }
+
+    private void SelectableLabelField (GUIContent label, string value)
 	{
 		EditorGUILayout.BeginHorizontal ();
 		EditorGUILayout.LabelField (label, GUILayout.Width (180), GUILayout.Height (16));

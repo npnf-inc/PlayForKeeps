@@ -32,7 +32,7 @@ namespace NPNF.Editor
         private Rect mRect;
         private TableView mAssetsTable = null;
         private TableAdapter mAdapter = null;
-        private string[] versions;
+        private List<NPNF.Core.Configuration.Version> versions;
         private int _mSelectedVersionIndex = -1;
         private GUIContent[] assetTypesContent = null;
         private GUIContent[] versionsContent = null;
@@ -59,7 +59,7 @@ namespace NPNF.Editor
                                          DIALOG_OK_BTN,
                                          DIALOG_CANCEL_BTN))
                     {
-                        mAssetManager.SetVersion(versions [value]);
+                        mAssetManager.SetVersion(versions [value].ClientVersion);
 						_mSelectedVersionIndex = value;
 						Reload(null);
                     }
@@ -110,8 +110,8 @@ namespace NPNF.Editor
 
         private void RefreshVersions()
         {
-            mAssetManager.GetVersions((string[] versionsResponse, NPNFError error) => {
-                versions = versionsResponse;
+            mAssetManager.GetVersions((List<NPNF.Core.Configuration.Version> versions, NPNFError error) => {
+                this.versions = versions;
                 if (error != null)
                 {
                     PopDialogCommandsGUI("Server unavailable or network not setup properly", 
@@ -119,14 +119,14 @@ namespace NPNF.Editor
                                          DIALOG_OK_BTN);
                 } else
                 {
-                    if (versions.Length > 0)
+                    if (versions.Count > 0)
                     {
-                        versionsContent = new GUIContent[versions.Length];
-                        for (int i=0; i<versions.Length; i++) 
-                            versionsContent [i] = new GUIContent(versions [i], "Select App Version");
+                        versionsContent = new GUIContent[versions.Count];
+                        for (int i=0; i<versions.Count; i++) 
+                            versionsContent [i] = new GUIContent(versions[i].ClientVersion, "Select App Version");
                         
                         _mSelectedVersionIndex = GetCurrentVersionIndex();
-                        mAssetManager.SetVersion(versions [_mSelectedVersionIndex]);
+                        mAssetManager.SetVersion(versions [_mSelectedVersionIndex].ClientVersion);
                         Reload(null);
                     } else
                     {
@@ -140,9 +140,9 @@ namespace NPNF.Editor
 
         private int GetCurrentVersionIndex()
         {
-            for (int i = 0; i < versions.Length; i++)
+            for (int i = 0; i < versions.Count; i++)
             {
-                if (versions [i].Equals(NPNFSettings.Instance.AppVersion))
+                if (versions [i].ClientVersion.Equals(NPNFSettings.Instance.AppVersion))
                 {
                     return i;
                 }
