@@ -1,6 +1,8 @@
 PlayForKeeps
 ============
 
+Download the latest SDK here: https://developer.npnf.com/download
+
 Game is designed for Mac OSX Standalone. 
 
 First scene is located under Assets/PlayForKeeps/Scenes/StartUp.unity
