@@ -5,7 +5,7 @@ Download the latest SDK here: https://developer.npnf.com/download.
 
 ## Running the Game
 To run the game:
-1. Clone this project, and open it in Unity.
+1. Clone this project, and then open it in Unity.
 2. Open the first scene, `Assets/PlayForKeeps/Scenes/StartUp.unity`.
 3. Click Play.
 
