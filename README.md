@@ -30,15 +30,15 @@ There are two possible outcomes:
 
 The following screenshot shows the start of the game:
 
-<img src="https://github.com/npnf-inc/PlayForKeeps/blob/master/Screenshots/start.png" height="200" />
+<img src="https://github.com/npnf-inc/PlayForKeeps/blob/master/Screenshots/start.png" height="300" />
 
 The following screenshots shows you finding a colleague.
 
-![Talk to Chris](https://github.com/npnf-inc/PlayForKeeps/blob/master/Screenshots/talkToChris.png)
+<img src="https://github.com/npnf-inc/PlayForKeeps/blob/master/Screenshots/talkToChris.png" height="300" />
 
 The following screenshot shows you getting an item from a colleague. The item you get is determined by a loot table, which is our gacha module configured with a zero cost to play. Also notice that your energy has been decremented.
 
-![Get an Item](https://github.com/npnf-inc/PlayForKeeps/blob/master/Screenshots/obtainItem.png)
+<img src="https://github.com/npnf-inc/PlayForKeeps/blob/master/Screenshots/obtainItem.png" height="300" />
 
 ## Controls
 Use the following keys to control the main character:
