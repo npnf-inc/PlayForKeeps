@@ -3,8 +3,16 @@ This game showcases how to use the features of [npnf Platform](https://developer
 
 Download the latest SDK here: https://developer.npnf.com/download.
 
+## Running the Game
+To run the game:
+1. Clone this project, and open it in Unity.
+2. Open the first scene, `Assets/PlayForKeeps/Scenes/StartUp.unity`.
+3. Click Play.
+
+This game was designed to run in stand-alone mode only. This is not a limitation of the SDK, but of the game itself.
+
 ## Game Logic
-You are an intern at our office, and today is your first day at work. You have six minutes to talk to every new colleague and collect the items required to craft a pitch for our CEO.
+You are an intern at our office, and today is your first day at work. You have three minutes to talk to every new colleague and collect the items required to craft a pitch for our CEO.
 
 Collect all the items in a category, and then fuse them into better items: strength, morale, and funding. Then fuse strength, morale, and funding into a pitch. To win the game, take the pitch to Woo, our CEO.
 
@@ -43,7 +51,7 @@ This game showcases our major gaming modules:
 
 ## Game End
 There are two possible outcomes:
-* __WIN__: Get your pitch by fusing together all the basic items you've collected, and then take it to Woo (our CEO) before the six minute timer expires.
+* __WIN__: Get your pitch by fusing together all the basic items you've collected, and then take it to Woo (our CEO) before the timer expires.
 
 * __LOSE__: The timer expires, and you still don't have a pitch.
 
@@ -62,8 +70,3 @@ The main folders in the project are:
 The game depends on a number of configurations in the Developer Portal. We will provide an account that has a read-only version of these configurations shortly.
 
 In the meantime, if you want a copy of those configurations, email support@npnf.com.
-
-## Running the Game
-This game was designed to run in stand-alone mode only. This is not a limitation of the SDK, but of the game itself.
-
-Note: We will put up a playable version of this game on https://developer.npnf.com/docs shortly.
