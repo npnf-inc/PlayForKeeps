@@ -21,6 +21,11 @@ With every conversation, your colleague will give you something. You can talk to
 
 In order to talk to a colleague, you must have enough energy. Each conversation costs 20 units of energy. The maximum amount of energy is 180 units. Energy is automatically recharged at a rate of 3 units/second. You can also buy energy: 5 coins gets you 8 units of energy.
 
+There are two possible outcomes:
+* __WIN__: Get your pitch by fusing together all the basic items you've collected, and then take it to Woo (our CEO) before the timer expires.
+
+* __LOSE__: The timer expires, and you still don't have a pitch.
+
 ## Controls
 Use the following keys to control the main character:
 <dl>
@@ -49,12 +54,6 @@ This game showcases our major gaming modules:
 * __Collections__: There are a total of thirteen objects that you can collect and that can be added your inventory. The goal is to collect them and fuse them until you get to your end goal: a pitch.
 
 * __Fusion__: Recipes let you evolve basic items into more powerful items. After you collect all items in a category, execute a fusion. The npnf platform checks that you've got all the prerquisutes, and then executes the fusion formula, deducting any items from your inventory and adding any new items.
-
-## Game End
-There are two possible outcomes:
-* __WIN__: Get your pitch by fusing together all the basic items you've collected, and then take it to Woo (our CEO) before the timer expires.
-
-* __LOSE__: The timer expires, and you still don't have a pitch.
 
 ## Code
 The first scene is in Assets/PlayForKeeps/Scenes/StartUp.unity.
