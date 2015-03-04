@@ -1,8 +1,6 @@
 # PlayForKeeps
 This game showcases how to use the features of [npnf Platform](https://developer.npnf.com).
 
-Build your next game faster with the [npnf Platform](https://developer.npnf.com).
-
 Download the latest SDK here: https://developer.npnf.com/download.
 
 ## Game Logic
