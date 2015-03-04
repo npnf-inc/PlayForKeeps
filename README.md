@@ -26,6 +26,20 @@ There are two possible outcomes:
 
 * __LOSE__: The timer expires, and you still don't have a pitch.
 
+### Screenshots
+
+The following screenshot shows the start of the game:
+
+![Start](https://github.com/npnf-inc/PlayForKeeps/blob/master/Screenshots/start.png)
+
+The following screenshots shows you finding a colleague.
+
+![Talk to Chris](https://github.com/npnf-inc/PlayForKeeps/blob/master/Screenshots/talkToChris.png)
+
+The following screenshot shows you getting an item from a colleague. The item you get is determined by a loot table, which is our gacha module configured with a zero cost to play. Also notice that your energy has been decremented.
+
+![Get an Item](https://github.com/npnf-inc/PlayForKeeps/blob/master/Screenshots/obtainItem.png)
+
 ## Controls
 Use the following keys to control the main character:
 <dl>
