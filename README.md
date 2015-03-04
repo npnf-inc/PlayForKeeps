@@ -30,7 +30,7 @@ There are two possible outcomes:
 
 The following screenshot shows the start of the game:
 
-![Start](https://github.com/npnf-inc/PlayForKeeps/blob/master/Screenshots/start.png)
+<img src="https://github.com/npnf-inc/PlayForKeeps/blob/master/Screenshots/start.png" height="200" />
 
 The following screenshots shows you finding a colleague.
 
