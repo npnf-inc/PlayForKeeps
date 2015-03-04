@@ -1,7 +1,9 @@
 # PlayForKeeps
-This game showcases how to use the features of npnf Platform. Build your next game faster with the npnf Platform.
+This game showcases how to use the features of [npnf Platform](https://developer.npnf.com).
 
-Download the latest SDK here: https://developer.npnf.com/download
+Build your next game faster with the [npnf Platform](https://developer.npnf.com).
+
+Download the latest SDK here: https://developer.npnf.com/download.
 
 ## Game Logic
 You are an intern at our office, and today is your first day at work. You have six minutes to talk to every new colleague and collect the items required to craft a pitch for our CEO.
