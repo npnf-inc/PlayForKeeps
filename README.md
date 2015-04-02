@@ -1,7 +1,7 @@
 # PlayForKeeps
 This game showcases how to use the features of [npnf Platform](https://developer.npnf.com).
 
-Download the latest SDK here: https://developer.npnf.com/download.
+Download the latest SDK here: https://developer.npnf.com/download. You will need to sign into your account to download.
 
 ## Running the Game
 To run the game:
